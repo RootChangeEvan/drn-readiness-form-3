@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRN Readiness Self-Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #22378C;
+  --navy-dark: #18276a;
+  --ink: #1d2433;
+  --muted: #5b6475;
+  --line: #dde2ec;
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --accent: #e8edf9;
+  --error: #b42318;
+  --error-bg: #fef3f2;
+  --ok: #157f3c;
+  --s1: #c9d2e9; --s2: #a9b7de; --s3: #7d91cc; --s4: #4f69b8; --s5: #22378C;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: 'Source Sans 3', system-ui, -apple-system, sans-serif;
+  font-size: 16px; line-height: 1.5;
+}
+.wrap { max-width: 780px; margin: 0 auto; padding: 0 16px 64px; }
+
+header.band { background: var(--navy); color: #fff; padding: 28px 16px 24px; }
+header.band .inner { max-width: 780px; margin: 0 auto; }
+header.band .kicker { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
+header.band h1 { margin: 6px 0 0; font-size: 28px; line-height: 1.2; font-weight: 700; }
+
+.progress-wrap {
+  position: sticky; top: 0; z-index: 10; background: var(--bg);
+  border-bottom: 1px solid var(--line); padding: 10px 0;
+}
+.progress-row { display: flex; align-items: center; gap: 12px; max-width: 780px; margin: 0 auto; padding: 0 16px; }
+.progress-bar { flex: 1; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0; background: var(--navy); transition: width .25s ease; }
+.progress-label { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.legend-mini { max-width: 780px; margin: 6px auto 0; padding: 0 16px; font-size: 12.5px; color: var(--muted); }
+.legend-mini b { color: var(--ink); font-weight: 600; }
+
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: 22px 22px; margin-top: 18px;
+}
+.card h2 { margin: 0 0 4px; font-size: 20px; color: var(--navy); }
+.card .sub { margin: 0 0 14px; color: var(--muted); font-size: 14.5px; }
+.intro p { margin: 0 0 12px; }
+.intro p:last-child { margin-bottom: 0; }
+
+details.glossary { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+details.glossary summary { cursor: pointer; font-weight: 600; color: var(--navy); }
+dl { margin: 10px 0 0; }
+dt { font-weight: 600; margin-top: 10px; }
+dd { margin: 2px 0 0; color: var(--muted); }
+
+.scale-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14.5px; }
+.scale-table td { padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+.scale-table td:first-child { width: 52px; font-weight: 700; color: var(--navy); }
+
+.field { margin-top: 16px; }
+.field:first-of-type { margin-top: 0; }
+.field > label, .field > .label { display: block; font-weight: 600; margin-bottom: 6px; }
+.opt { font-weight: 400; color: var(--muted); font-size: 14px; }
+input[type=text], input[type=number], select, textarea {
+  width: 100%; font: inherit; color: var(--ink); background: #fff;
+  border: 1px solid #c3cad8; border-radius: 7px; padding: 10px 12px;
+}
+textarea { min-height: 70px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--navy); outline-offset: 1px; border-color: var(--navy); }
+.radio-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px; border: 1px solid #c3cad8; border-radius: 99px;
+  padding: 8px 14px; cursor: pointer; background: #fff; font-size: 15px;
+}
+.pill input { accent-color: var(--navy); margin: 0; }
+.pill:has(input:checked) { border-color: var(--navy); background: var(--accent); }
+.inline-num { margin-top: 10px; max-width: 220px; }
+
+.domain-num {
+  display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 2px;
+}
+.item { padding: 16px 0; border-top: 1px solid var(--line); }
+.item:first-of-type { border-top: 0; padding-top: 6px; }
+.item.invalid .q-text { color: var(--error); }
+.q-text { margin: 0 0 10px; font-weight: 600; }
+.q-text .qn { color: var(--navy); margin-right: 6px; }
+.scale { display: grid; grid-template-columns: repeat(4, 1fr) 1fr; gap: 6px; }
+.scale button {
+  font: inherit; padding: 8px 4px 9px; border-radius: 8px; cursor: pointer;
+  border: 1px solid #c3cad8; background: #fff; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center;
+  transition: background .12s, border-color .12s;
+}
+.scale button .sn { font-weight: 700; font-size: 17px; line-height: 1.1; }
+.scale button .sl { font-size: 12.5px; line-height: 1.25; color: var(--muted); }
+.scale button.na { margin-left: 6px; border-style: dashed; }
+.scale button.na .sn { font-size: 14px; color: var(--muted); }
+.scale button:hover { border-color: var(--navy); }
+.scale button:focus-visible { outline: 2px solid var(--navy); outline-offset: 1px; }
+.scale button[aria-checked="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.scale button[aria-checked="true"] .sl, .scale button[aria-checked="true"] .sn { color: #fff; }
+.scale button.na[aria-checked="true"] { background: #5b6475; border-color: #5b6475; border-style: solid; }
+.chosen { display: none; }
+.note-toggle {
+  margin-top: 12px; background: none; border: 0; padding: 0; font: inherit; font-size: 14.5px;
+  color: var(--navy); cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+}
+.note-box { margin-top: 10px; display: none; }
+.note-box.open { display: block; }
+
+.support-list { display: grid; gap: 8px; }
+.check {
+  display: flex; gap: 10px; align-items: flex-start; border: 1px solid #c3cad8; border-radius: 8px;
+  padding: 10px 12px; cursor: pointer; background: #fff;
+}
+.check input { accent-color: var(--navy); margin-top: 4px; }
+.check:has(input:checked) { border-color: var(--navy); background: var(--accent); }
+.check:has(input:disabled) { opacity: .5; cursor: not-allowed; }
+.count-hint { font-size: 13.5px; color: var(--muted); margin-top: 6px; }
+
+#form-errors {
+  display: none; margin-top: 18px; padding: 12px 14px; border-radius: 8px;
+  background: var(--error-bg); color: var(--error); border: 1px solid #f5c2bd; font-size: 15px;
+}
+.submit-row { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+#submit-btn {
+  font: inherit; font-weight: 700; font-size: 17px; background: var(--navy); color: #fff;
+  border: 0; border-radius: 8px; padding: 13px 28px; cursor: pointer;
+}
+#submit-btn:hover { background: var(--navy-dark); }
+#submit-btn:disabled { opacity: .6; cursor: wait; }
+.privacy { font-size: 13.5px; color: var(--muted); }
+
+#success-screen { display: none; }
+#success-screen.visible { display: block; }
+.success-head { color: var(--ok); font-size: 22px; font-weight: 700; margin: 0 0 6px; }
+.profile { margin-top: 16px; display: grid; gap: 10px; }
+.prow { display: grid; grid-template-columns: minmax(0, 1fr) 150px 36px; gap: 10px; align-items: center; font-size: 15px; }
+.ptrack { height: 10px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.pfill { height: 100%; background: var(--navy); border-radius: 99px; }
+.pval { font-weight: 700; text-align: right; color: var(--navy); }
+.pval.na { color: var(--muted); font-weight: 400; font-size: 13px; }
+.again { margin-top: 18px; background: none; border: 1px solid var(--navy); color: var(--navy);
+  font: inherit; font-weight: 600; border-radius: 8px; padding: 10px 18px; cursor: pointer; }
+
+@media (max-width: 560px) {
+  header.band h1 { font-size: 23px; }
+  .card { padding: 18px 16px; }
+  .scale { grid-template-columns: 1fr; gap: 5px; }
+  .scale button { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 9px 14px; text-align: left; }
+  .scale button .sn { width: 28px; text-align: center; }
+  .scale button .sl { font-size: 14.5px; }
+  .scale button.na { margin: 4px 0 0; }
+  .prow { grid-template-columns: minmax(0, 1fr) 90px 32px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<header class="band">
+  <div class="inner">
+    <div class="kicker">The Carter Center &middot; Root Change</div>
+    <h1>DRN Operational Readiness Self-Assessment</h1>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-row">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-label" id="progress-label">0 of 13 answered</div>
+  </div>
+</div>
+
+<main class="wrap">
+<form id="main-form" novalidate onsubmit="event.preventDefault(); submitForm();">
+
+  <section class="card intro">
+    <p>With the 2026 election period approaching, this self-assessment is designed to help each DRN take a practical look at its current readiness. The goal is to identify what is already in place, where there may still be gaps, and where additional support could be useful.</p>
+    <p>Each DRN can decide who should complete the assessment. In some cases, one person may be best positioned to respond. In others, several people involved in the DRN&rsquo;s work may want to complete it separately or discuss the questions together.</p>
+    <p>Please answer based on what is actually in place today. The self-assessment should take about 8&ndash;10 minutes.</p>
+    <p>Responses will be used to support follow-up conversations with The Carter Center and Root Change. They are not intended to rank or score DRNs against one another.</p>
+
+    <table class="scale-table" aria-label="Rating scale">
+      <tr><td>1</td><td>Not in place</td></tr>
+      <tr><td>2</td><td>Partly in place</td></tr>
+      <tr><td>3</td><td>Fully in place, but untested</td></tr>
+      <tr><td>4</td><td>Tested and ready to go</td></tr>
+      <tr><td>N/A</td><td>Intentionally outside the DRN&rsquo;s role</td></tr>
+    </table>
+
+    <details class="glossary" open>
+      <summary>Key terms</summary>
+      <dl>
+        <dt>Response</dt>
+        <dd>Any deliberate DRN action, including communicating, convening, connecting partners, activating trusted messengers, or escalating information to another actor.</dd>
+        <dt>Trusted messenger</dt>
+        <dd>A person or organization with established credibility with a specific audience the DRN may need to reach.</dd>
+        <dt>Partner</dt>
+        <dd>An organization or individual outside the DRN that may play a role in election-period response.</dd>
+        <dt>Election period</dt>
+        <dd>The period from early voting through certification.</dd>
+        <dt>Tested</dt>
+        <dd>The process, relationship, or capability has been used in a real situation or practiced through a scenario or exercise closely enough to confirm that the people involved know what to do and that it works as intended.</dd>
+      </dl>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>About this response</h2>
+    <div class="field">
+      <label for="state">DRN</label>
+      <select id="state" required>
+        <option value="">Select your DRN&hellip;</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="respondent-name">Your name</label>
+      <input type="text" id="respondent-name" autocomplete="name" required>
+    </div>
+    <div class="field">
+      <label for="respondent-role">Your role in the DRN <span class="opt">(optional)</span></label>
+      <input type="text" id="respondent-role" placeholder="e.g., State lead, steering committee member">
+    </div>
+  </section>
+
+  <div id="domains"></div>
+
+  <section class="card">
+    <h2>Where would support be most useful?</h2>
+    <p class="sub">Choose up to three areas. This shapes follow-up conversations; it is not a score.</p>
+    <div class="support-list" id="support-list"></div>
+    <div class="count-hint" id="support-hint">0 of 3 selected</div>
+    <div class="field" style="margin-top:16px">
+      <label for="support-notes">What kind of support would help? <span class="opt">(optional)</span></label>
+      <textarea id="support-notes" placeholder="e.g., help mapping trusted messengers, a decision protocol template, a practice scenario"></textarea>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Looking ahead</h2>
+    <div class="field">
+      <label for="most-important">What is the single most important thing your DRN still needs to put in place for the upcoming election period?</label>
+      <textarea id="most-important" required></textarea>
+    </div>
+  </section>
+
+  <div id="form-errors" role="alert"></div>
+
+  <div class="submit-row">
+    <button type="submit" id="submit-btn">Submit assessment</button>
+    <span class="privacy">Please don't include names of private individuals in your notes.</span>
+  </div>
+</form>
+
+<section class="card" id="success-screen" aria-live="polite">
+  <p class="success-head">Thank you &mdash; your assessment has been received.</p>
+  <p id="success-details" style="margin:0;color:var(--muted)"></p>
+  <h2 style="margin-top:22px">Your readiness profile</h2>
+  <p class="sub">Average of your ratings in each area, on the 1&ndash;4 scale. N/A answers are left out. This is for your own reflection and follow-up conversations, not a ranking.</p>
+  <div class="profile" id="profile"></div>
+  <button class="again" type="button" onclick="location.reload()">Submit another response</button>
+</section>
+</main>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+// Same backend as the weekly and CRT forms. Submissions are tagged
+// form_type: 'readiness' so the shared doPost routes them separately.
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-9DRZ2MVqCe7DZZqDCNGII_3aGZKgE5WsIJ3lsOVF4ikxtH4jcwUti-XUNySOgZ4I/exec';
+var ASSESSMENT_ROUND = '2026 election period';
+
+var DRNS = ['Arizona', 'Florida', 'Georgia', 'Michigan', 'North Carolina', 'Pennsylvania', 'Wisconsin'];
+
+// Short labels shown on each answer button; full wording is in the intro table.
+var SCALE_SHORT = {
+  '1': 'Not in place', '2': 'Partly in place', '3': 'In place, untested',
+  '4': 'Tested & ready', 'na': 'Outside our role'
+};
+var SCALE = {
+  '1': 'Not in place', '2': 'Partly in place', '3': 'Fully in place, but untested',
+  '4': 'Tested and ready to go', 'na': 'Intentionally outside the DRN’s role'
+};
+var SCALE_VALUES = ['1', '2', '3', '4', 'na'];
+var SCALE_MAX = 4;
+
+var DOMAINS = [
+  { id: 'd1', title: 'Threats, triggers, and decisions', items: [
+    ['q01', 'We have identified the election-period scenarios most relevant to our state.'],
+    ['q02', 'We have agreed on what developments or conditions would trigger the DRN to consider a response.'],
+    ['q03', 'We have agreed on who can authorize a DRN response when time-sensitive action is needed.'] ] },
+  { id: 'd2', title: 'People and network assets', items: [
+    ['q04', 'We know which members or partners can be called on for specific election-period needs (e.g., sheriff, legal experts).'],
+    ['q05', 'We have identified important communities or constituencies we cannot currently reach well and have identified trusted partners who could help connect us to them.'] ] },
+  { id: 'd3', title: 'Information and verification', items: [
+    ['q06', 'Members know where to send important information about an emerging election-related concern, and it can quickly reach the person responsible for deciding what happens next.'],
+    ['q07', 'We have a clear process for checking information before the DRN acts on it or shares it.'] ] },
+  { id: 'd4', title: 'Communications and trusted messengers', items: [
+    ['q08', 'We have pre-drafted messages or communications materials ready to use for likely election-period scenarios, such as slow counts, misinformation, or contested results.'],
+    ['q09', 'We have a way to contact and activate trusted messengers quickly if needed.'] ] },
+  { id: 'd5', title: 'Coordination and handoffs', items: [
+    ['q10', 'Where other Carter Center teams (DP, TCC Comms, GMMB) or response partners are active, we understand who is responsible for what.'],
+    ['q11', 'We know whom to contact when a situation requires expertise or authority beyond the DRN (e.g., TCC sign-off).'] ] },
+  { id: 'd6', title: 'Safety and learning', items: [
+    ['q12', 'We have agreed on basic steps to protect members or partners who may face physical, digital, or reputational risk.'],
+    ['q13', 'We have a simple process for recording significant incidents, actions taken, and lessons learned.'] ] },
+];
+var ITEM_IDS = [];
+DOMAINS.forEach(function(d) { d.items.forEach(function(it) { ITEM_IDS.push(it[0]); }); });
+
+var answers = {};   // q01 -> '1'..'4' | 'na'
+
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+// ── BUILD ───────────────────────────────────────────────────
+function buildStateSelect() {
+  var sel = $('state');
+  DRNS.forEach(function(s) {
+    var o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o);
+  });
+}
+
+function buildDomains() {
+  var host = $('domains'), n = 0;
+  DOMAINS.forEach(function(d, di) {
+    var sec = document.createElement('section');
+    sec.className = 'card'; sec.id = 'card-' + d.id;
+    var html = '<span class="domain-num">Area ' + (di + 1) + ' of ' + DOMAINS.length + '</span><h2>' + esc(d.title) + '</h2>';
+    d.items.forEach(function(it) {
+      n++;
+      html += '<div class="item" id="item-' + it[0] + '">' +
+        '<p class="q-text" id="lbl-' + it[0] + '"><span class="qn">' + n + '.</span>' + esc(it[1]) + '</p>' +
+        '<div class="scale" role="radiogroup" aria-labelledby="lbl-' + it[0] + '">' +
+          SCALE_VALUES.map(function(v) {
+            return '<button type="button" role="radio" aria-checked="false" tabindex="' + (v === '1' ? '0' : '-1') + '"' +
+              (v === 'na' ? ' class="na"' : '') + ' data-q="' + it[0] + '" data-v="' + v + '"' +
+              ' title="' + esc(SCALE[v]) + '" aria-label="' + (v === 'na' ? 'N/A' : v) + ': ' + esc(SCALE[v]) + '">' +
+              '<span class="sn">' + (v === 'na' ? 'N/A' : v) + '</span><span class="sl">' + esc(SCALE_SHORT[v]) + '</span></button>';
+          }).join('') +
+        '</div><div class="chosen" id="chosen-' + it[0] + '"></div></div>';
+    });
+    html += '<button type="button" class="note-toggle" data-d="' + d.id + '">Add a note on this area (optional)</button>' +
+      '<div class="note-box" id="notebox-' + d.id + '">' +
+      '<textarea id="note-' + d.id + '" aria-label="Note on ' + esc(d.title) + '" placeholder="Context, what’s working, or what’s missing"></textarea></div>';
+    sec.innerHTML = html;
+    host.appendChild(sec);
+  });
+
+  host.addEventListener('click', function(e) {
+    var b = e.target.closest('.scale button');
+    if (b) { choose(b.dataset.q, b.dataset.v, true); return; }
+    var t = e.target.closest('.note-toggle');
+    if (t) {
+      var box = $('notebox-' + t.dataset.d);
+      box.classList.toggle('open');
+      t.textContent = box.classList.contains('open') ? 'Hide note' : 'Add a note on this area (optional)';
+      if (box.classList.contains('open')) $('note-' + t.dataset.d).focus();
+    }
+  });
+  // Arrow keys move within a scale, like a native radio group.
+  host.addEventListener('keydown', function(e) {
+    var b = e.target.closest('.scale button');
+    if (!b || ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].indexOf(e.key) === -1) return;
+    e.preventDefault();
+    var btns = Array.prototype.slice.call(b.parentNode.querySelectorAll('button'));
+    var i = btns.indexOf(b) + ((e.key === 'ArrowRight' || e.key === 'ArrowDown') ? 1 : -1);
+    i = (i + btns.length) % btns.length;
+    btns[i].focus(); choose(btns[i].dataset.q, btns[i].dataset.v, false);
+  });
+}
+
+function choose(q, v, fromClick) {
+  answers[q] = v;
+  var btns = document.querySelectorAll('.scale button[data-q="' + q + '"]');
+  btns.forEach(function(b) {
+    var on = b.dataset.v === v;
+    b.setAttribute('aria-checked', on ? 'true' : 'false');
+    b.tabIndex = on ? 0 : -1;
+  });
+  $('item-' + q).classList.remove('invalid');
+  updateProgress();
+}
+
+function buildSupport() {
+  var host = $('support-list');
+  DOMAINS.forEach(function(d) {
+    var l = document.createElement('label'); l.className = 'check';
+    l.innerHTML = '<input type="checkbox" name="support" value="' + d.id + '"><span>' + esc(d.title) + '</span>';
+    host.appendChild(l);
+  });
+  host.addEventListener('change', function() {
+    var boxes = host.querySelectorAll('input'), n = host.querySelectorAll('input:checked').length;
+    boxes.forEach(function(b) { b.disabled = !b.checked && n >= 3; });
+    $('support-hint').textContent = n + ' of 3 selected';
+  });
+}
+
+function updateProgress() {
+  var n = ITEM_IDS.filter(function(q) { return answers[q]; }).length;
+  $('progress-fill').style.width = Math.round(n / ITEM_IDS.length * 100) + '%';
+  $('progress-label').textContent = n + ' of ' + ITEM_IDS.length + ' answered';
+}
+
+// ── COLLECT / VALIDATE ──────────────────────────────────────
+function collectData() {
+  var notes = {};
+  DOMAINS.forEach(function(d) { var t = $('note-' + d.id).value.trim(); if (t) notes[d.id] = t; });
+  return {
+    form_type:          'readiness',   // tells the shared backend this is not a weekly report
+    timestamp:          new Date().toISOString(),
+    assessment_round:   ASSESSMENT_ROUND,
+    state:              $('state').value,
+    respondent_name:    $('respondent-name').value.replace(/\s+/g, ' ').trim(),
+    respondent_role:    $('respondent-role').value.replace(/\s+/g, ' ').trim(),
+    answers:            Object.assign({}, answers),
+    domain_notes:       notes,
+    support_priorities: Array.prototype.map.call(document.querySelectorAll('input[name="support"]:checked'), function(b) { return b.value; }),
+    support_notes:      $('support-notes').value.trim(),
+    most_important:     $('most-important').value.trim(),
+  };
+}
+
+function validate(data) {
+  var errs = [], firstBad = null;
+  if (!data.state) { errs.push('Select your DRN.'); firstBad = firstBad || $('state'); }
+  if (!data.respondent_name) { errs.push('Enter your name.'); firstBad = firstBad || $('respondent-name'); }
+  var missing = [];
+  ITEM_IDS.forEach(function(q, i) {
+    if (!data.answers[q]) {
+      missing.push(i + 1);
+      $('item-' + q).classList.add('invalid');
+      firstBad = firstBad || $('item-' + q);
+    }
+  });
+  if (!data.most_important) { errs.push('Tell us the single most important thing your DRN still needs to put in place.'); firstBad = firstBad || $('most-important'); }
+  if (missing.length) errs.push('Answer question' + (missing.length > 1 ? 's ' : ' ') + missing.join(', ') + ' (choose N/A if it’s outside your DRN’s role).');
+  return { errs: errs, firstBad: firstBad };
+}
+
+// ── SUBMIT ──────────────────────────────────────────────────
+var submitting = false;
+async function submitForm() {
+  if (submitting) return;
+  var data = collectData();
+  var v = validate(data), box = $('form-errors');
+  if (v.errs.length) {
+    box.style.display = 'block';
+    box.innerHTML = v.errs.map(esc).join('<br>');
+    if (v.firstBad) v.firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  box.style.display = 'none';
+  submitting = true;
+  var btn = $('submit-btn'); btn.disabled = true; btn.textContent = 'Submitting…';
+
+  var controller = new AbortController();
+  var timeout = setTimeout(function() { controller.abort(); }, 30000);
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method:  'POST',
+      mode:    'no-cors',   // Apps Script sends no CORS headers; failures are logged server-side
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(data),
+      signal:  controller.signal,
+    });
+    clearTimeout(timeout);
+    showSuccess(data);
+  } catch (err) {
+    clearTimeout(timeout);
+    submitting = false; btn.disabled = false; btn.textContent = 'Submit assessment';
+    box.style.display = 'block';
+    box.textContent = err.name === 'AbortError'
+      ? 'Submission timed out — the system may be starting up. Please try again in 30 seconds.'
+      : 'Submission failed — please check your connection and try again.';
+  }
+}
+
+function showSuccess(data) {
+  $('main-form').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  $('success-screen').classList.add('visible');
+  $('success-details').innerHTML = '<strong>' + esc(data.state) + '</strong> &middot; ' + esc(data.respondent_name);
+  $('profile').innerHTML = DOMAINS.map(function(d) {
+    var vals = d.items.map(function(it) { return data.answers[it[0]]; })
+      .filter(function(x) { return x && x !== 'na'; }).map(Number);
+    if (!vals.length) {
+      return '<div class="prow"><span>' + esc(d.title) + '</span><div class="ptrack"></div><span class="pval na">N/A</span></div>';
+    }
+    var avg = vals.reduce(function(a, b) { return a + b; }, 0) / vals.length;
+    return '<div class="prow"><span>' + esc(d.title) + '</span><div class="ptrack"><div class="pfill" style="width:' +
+      (avg / SCALE_MAX * 100) + '%"></div></div><span class="pval">' + (Math.round(avg * 10) / 10) + '</span></div>';
+  }).join('');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── INIT ────────────────────────────────────────────────────
+buildStateSelect();
+buildDomains();
+buildSupport();
+updateProgress();
+</script>
+</body>
+</html>
